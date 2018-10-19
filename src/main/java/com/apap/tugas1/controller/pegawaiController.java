@@ -286,7 +286,6 @@ public class pegawaiController {
 			//7. ketiga tiganya
 			else {
 				InstansiModel in = instansiService.cariInstansiById(Long.parseLong(idInstansi));
-				System.out.println(in.getId());
 				List <PegawaiModel> pegSeInstansi = in.getPegawai_instansi();
 				for (PegawaiModel ps : pegSeInstansi) {
 					List <JabatanPegawaiModel> psJabatan = ps.getJabatanPegawai();
@@ -342,7 +341,6 @@ public class pegawaiController {
 		String tanggalLahirFormat = format.format(formattedTglLahir);
 		
 		String tglLahir = tanggalLahirFormat.substring(0, 4) + ""+ tanggalLahirFormat.substring(6); //ddmmyy
-		System.out.println(tglLahir + "ini tanggal lahir");
 		String tanggalBaru ="" + pegawai.getTanggallahir() + "";
 		
 		InstansiModel instansi = instansiService.cariInstansiById(pegawai.getInstansi().getId());
