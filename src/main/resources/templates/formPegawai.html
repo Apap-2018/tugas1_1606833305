@@ -7,10 +7,16 @@
 	<object th:include="fragments/fragment :: js" th:remove="tag"></object>
 </head>
 
+<style>
+	#isi{
+		margin-left : 50px;
+		margin-top:35px;
+	}
+</style>
 <body>
 	<nav th:replace="fragments/fragment :: navbar"></nav>
 	
-	<div class="row">
+	<div class="row" id = "isi">
 		<div class ="col-md-6" >
 			<div class="card" >
 				<div class = "card-header" >Formulir Penambahan Pegawai</div>
