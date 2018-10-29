@@ -1,10 +1,13 @@
 package com.apap.tugas1.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.apap.tugas1.model.JabatanModel;
+import com.apap.tugas1.model.JabatanPegawaiModel;
+import com.apap.tugas1.model.PegawaiModel;
 import com.apap.tugas1.repository.JabatanDb;
 
 @Service
@@ -41,5 +44,15 @@ public class JabatanServiceImp implements JabatanService{
 	@Override
 	public void hapusJabatan(long id) {
 		jabatanDb.deleteById(id);	
+	}
+
+	@Override
+	public List<PegawaiModel> pagawaiSeJabatan(long idJabatan) {
+		List <PegawaiModel> pegawai = new ArrayList <>();
+		JabatanModel jab = jabatanDb.findJabatanById(idJabatan);
+		for (JabatanPegawaiModel jp : jab.getJabatanPegawai()) {
+			pegawai.add(jp.getPegawai());
+		}
+		return pegawai;
 	}	
 }

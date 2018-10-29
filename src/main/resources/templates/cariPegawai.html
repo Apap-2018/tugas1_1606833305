@@ -34,7 +34,7 @@
 						    <label class="control-label col-sm-5" >Provinsi:</label>
 						    <div class="col-sm-12">
 							    <select class="form-control" id="provinsi2" name = "idProvinsi">
-							    	<option th:value = null>- Pilih Provinsi -</option> 
+							    	<option th:value = "0">- Pilih Provinsi -</option> 
 							    	<a th:each="prov, iterationStatus : ${provinsi}">
 								    	<option th:text = ${prov.nama} th:value = ${prov.id}></option>
 							      	</a>
@@ -46,7 +46,7 @@
 						    <label class="control-label col-sm-5">Instansi:</label>
 						    <div class="col-sm-12">
 							    <select class="form-control" id="form-inst" name = "idInstansi">
-							    	<option th:value = null>- Pilih Instansi -</option>
+							    	<option th:value = "0">- Pilih Instansi -</option>
 							      	<a th:each="instansi, iterationStatus : ${instansi}">
 								      	<option class ="instansi" th:text = "${instansi.nama} + ' - ' + ${instansi.provinsi.nama}" th:value = ${instansi.id}></option>
 							      	</a>
@@ -59,7 +59,7 @@
 						    <label class="control-label col-sm-5">Jabatan:</label>
 						    <div class="col-sm-12">
 					    		<select class="form-control" id = "jabatan" name = "idJabatan"> 
-					    			<option th:value = null>- Pilih Jabatan -</option>
+					    			<option th:value = "0">- Pilih Jabatan -</option>
 							    	<a th:each="jabs, iterationStatus : ${jabatan}">
 								    	<option th:text = ${jabs.nama} th:value = ${jabs.id}></option>
 							    </select>
