@@ -142,8 +142,8 @@
 					console.log ("disini");
 					$(".instansi").remove();
 					for (x in objs){
-						console.log(objs[x].nama);
-						$("#form-inst").append("<option class ='instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" value = "+ "'"+objs[x].id+"'"+">" + objs[x].nama + "</option>");
+						console.log(objs[x]);
+						$("#form-inst").append("<option class ='instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" value = "+ "'"+objs[x].id+"'"+">" + objs[x].nama + " - " + objs[x].provinsi.nama + "</option>");
 						console.log (objs[x]);
 						console.log("<option class ='instansi' name = 'instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" th:value = "+ "'"+objs[x].id+"'"+">"+objs[x].nama+"</option>");
 					}

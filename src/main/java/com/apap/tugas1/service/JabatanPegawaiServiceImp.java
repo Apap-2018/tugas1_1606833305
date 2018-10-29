@@ -37,4 +37,11 @@ public class JabatanPegawaiServiceImp implements JabatanPegawaiService {
 		jabatanPegawaiDb.delete(jab);
 		
 	}
+
+	@Override
+	public void setPegawaiJab(PegawaiModel pegawai) {
+		for (JabatanPegawaiModel pegjab : pegawai.getJabatanPegawai()) {
+			pegjab.setPegawai(pegawai);
+		}
+	}
 }

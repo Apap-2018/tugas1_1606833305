@@ -67,8 +67,8 @@
 						      	<tr>
 						      		<td>Jabatan</td>
 						      		<td>
-						      			<div th:each="namaJabatan, iterationStatus : ${listJabatanMuda}">
-						      				<div th:text="${iterationStatus.count} + '. ' + ${namaJabatan}" ></div>
+						      			<div th:each="jabatanPeg, iterationStatus : ${pegMuda.jabatanPegawai}">
+						      				<div th:text="${iterationStatus.count} + '. ' + ${jabatanPeg.jabatan.nama}" ></div>
 										</div>
 									</td>
 								</tr>							
@@ -129,8 +129,8 @@
 							      	<tr>
 							      		<td>Jabatan</td>
 							      		<td>
-							      			<div th:each="namaJabatan, iterationStatus : ${listJabatanTua}">
-							      				<div th:text="${iterationStatus.count} + '. ' + ${namaJabatan}" ></div>
+							      			<div th:each="jabatanPeg, iterationStatus : ${pegTua.jabatanPegawai}">
+							      				<div th:text="${iterationStatus.count} + '. ' + ${jabatanPeg.jabatan.nama}" ></div>
 											</div>
 										</td>
 									</tr>							

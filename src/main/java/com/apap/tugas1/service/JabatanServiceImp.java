@@ -21,20 +21,16 @@ public class JabatanServiceImp implements JabatanService{
 
 	@Override
 	public List<JabatanModel> selectAll() {
-		// TODO Auto-generated method stub
 		return jabatanDb.findAll();
 	}
 
 	@Override
 	public JabatanModel findJabatanById(long id) {
-		// TODO Auto-generated method stub
-		
 		return jabatanDb.findJabatanById(id);
 	}
 
 	@Override
 	public void ubahJabatan(JabatanModel jabatan) {
-		// TODO Auto-generated method stub
 		JabatanModel oldJabatan = jabatanDb.findJabatanById(jabatan.getId());
 		oldJabatan.setNama(jabatan.getNama());
 		oldJabatan.setDeskripsi(jabatan.getDeskripsi());

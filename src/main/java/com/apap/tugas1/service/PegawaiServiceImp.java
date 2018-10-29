@@ -73,23 +73,53 @@ public class PegawaiServiceImp implements PegawaiService{
 		}				
 	}
 
+	@Override
+	public void setNIP(PegawaiModel pegawai) {
+		List <PegawaiModel> pegawaiSeInstansi = pegawai.getInstansi().getPegawai_instansi();
+		int indexSama = 1;
+		for (PegawaiModel peg : pegawaiSeInstansi) {
+			if (pegawai.getTahun_masuk().equals(peg.getTahun_masuk()) && pegawai.getTanggallahir().equals(peg.getTanggallahir())) {
+				indexSama ++;
+			}
+		}
+		
+		String noUrut = "";
+		if (indexSama < 10) {
+			noUrut = "0" + indexSama;
+		}
+		else {
+			noUrut = "" + indexSama;
+		}
+		
+		String tgl = "" + pegawai.getTanggallahir() + "";
+		String tglDMY = tgl.substring(8,10) + tgl.substring(5,7) + tgl.substring(2,4);
+		String nip = pegawai.getInstansi().getId() + tglDMY + pegawai.getTahun_masuk() + noUrut;
+		pegawai.setNip(nip);		
+	}
 
+	@Override
+	public void resetNIP(PegawaiModel pegawai) {
+		PegawaiModel peg = pegawaiDb.findPegawaiById(pegawai.getId());
+		
+		if ( (!pegawai.getInstansi().equals(peg.getInstansi())) || (!pegawai.getTahun_masuk().equalsIgnoreCase(peg.getTahun_masuk())) || (!pegawai.getTanggallahir().equals(peg.getTanggallahir())) ) {
+			setNIP (pegawai);
+			//System.out.println("masuk sini ganti nip" +  pegawai.getNip() + "nip baru" );
+		}
+		
+		//PegawaiModel pegawai = pegawaiDb.findPegawaiById(id);
+		
+	}
 
-
-
-
-
-
-	
-
-
-
-
-
-
-	
-
-
-
-
+	@Override
+	public int gajiTertinggiPegawai(PegawaiModel pegawai) {
+		double gajiTertinggi = 0;
+		for (JabatanPegawaiModel jabatan : pegawai.getJabatanPegawai()) {
+			if (jabatan.getJabatan().getGajiPokok() > gajiTertinggi) {
+				gajiTertinggi = jabatan.getJabatan().getGajiPokok();
+			}
+		}
+		double gaji = gajiTertinggi + (pegawai.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggi/100);
+		int gajiInt = (int) gaji;
+		return gajiInt;
+	}
 }

@@ -9,4 +9,5 @@ public interface JabatanPegawaiService {
 	List <JabatanPegawaiModel> selectAll ();
 	List <JabatanPegawaiModel> findJabatanPegawaiByPegawai (PegawaiModel pegawai);
 	void hapusJabatanPegawai (JabatanPegawaiModel jab);
+	void setPegawaiJab (PegawaiModel pegawai);
 }

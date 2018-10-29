@@ -22,35 +22,35 @@
 						<div class="form-group">
 							<label class="control-label col-sm-4">Nama:</label>
 							<div class="col-sm-10">
-						    	<input type="text" class="form-control" name="nama" th:value = "${pegawai.nama}">
+						    	<input type="text" class="form-control" name="nama" th:value = "${pegawai.nama}" th:required = "true">
 						    </div>
 						</div>
 						
 						<div class="form-group">
 							<label class="control-label col-sm-4">Tempat Lahir:</label>
 							<div class="col-sm-10">
-						    	<input type="text" class="form-control" name="tempat_lahir" th:value = "${pegawai.tempat_lahir}">
+						    	<input type="text" class="form-control" name="tempat_lahir" th:value = "${pegawai.tempat_lahir}" th:required = "true">
 						    </div>
 						</div>
 						
 						<div class="form-group">
 							<label class="control-label col-sm-4">Tanggal Lahir:</label>
 							<div class="col-sm-10">
-						    	<input type="date" class="form-control" name="tanggallahir" th:value = "${pegawai.tanggallahir}">
+						    	<input type="date" class="form-control" name="tanggallahir" th:value = "${pegawai.tanggallahir}" th:required = "true">
 						    </div>
 						</div>
 						
 						<div class="form-group">
 							<label class="control-label col-sm-4">Tahun Masuk:</label>
 							<div class="col-sm-10">
-						    	<input type="text" class="form-control" name="tahun_masuk" th:value = "${pegawai.tahun_masuk}">
+						    	<input type="text" class="form-control" name="tahun_masuk" th:value = "${pegawai.tahun_masuk}" th:required = "true">
 						    </div>
 						</div>
 						
 						<div class="form-group">
 						    <label class="control-label col-sm-2" >Provinsi:</label>
 						    <div class="col-sm-10">
-							    <select class="form-control" id = "provinsi"> 
+							    <select class="form-control" id = "provinsi" th:required = "true"> 
 							    	<option th:text = ${pegawai.instansi.provinsi.nama} th:value = ${pegawai.instansi.provinsi.id}></option>
 							    	<a th:each="prov, iterationStatus : ${allProvinsi}">
 								    	<option th:text = ${prov.nama} th:value = ${prov.id}></option>
@@ -62,14 +62,17 @@
 						<div class="form-group">
 						    <label class="control-label col-sm-2">Instansi:</label>
 						    <div class="col-sm-10">
-							    <select class="form-control" id="form-inst" name = "instansi">
-							    	<option th:text = "${pegawai.instansi.nama} + ' - ' + ${pegawai.instansi.provinsi.nama}" th:value = ${pegawai.instansi.id}></option>
-							      	<a th:each="instansi, iterationStatus : ${allInstansi}">
-								      	<option class ="instansi" th:text = "${instansi.nama}" th:value = ${instansi.id}></option>
-							      	</a>
-							    </select>
+						    	<div id = "dropdownInstansi">
+								    <select class="form-control" id="instansiAwal" name = "instansi" th:required = "true">
+								    	<option th:text = "${pegawai.instansi.nama} + ' - ' + ${pegawai.instansi.provinsi.nama}" th:value = ${pegawai.instansi.id}></option>
+								      	<a th:each="instansi, iterationStatus : ${pegawai.instansi.provinsi.listInstansi}">
+									      	<option class ="instansi" th:text = "${instansi.nama} + ' - ' + ${instansi.provinsi.nama}" th:value = ${instansi.id}></option>
+								      	</a>
+								    </select>
+							    </div>
 							</div>
 						 </div>
+						 
 						 
 						 <div class="form-group">
 						    <label class="control-label col-sm-2">Jabatan:</label>
@@ -78,7 +81,7 @@
 						    	<div id = "kumpulanRowJabatan">
 						    		<div th:each = "jabatanlama, iterationStatus1 : ${pegawai.jabatanPegawai}">
 				
-							    		<select th:name = "'jabatanPegawai[' + ${iterationStatus1.index} + '].jabatan'" class="form-control" id = "jabatan">
+							    		<select th:name = "'jabatanPegawai[' + ${iterationStatus1.index} + '].jabatan'" class="form-control" id = "jabatan" th:required = "true">
 							    			<option th:text = ${jabatanlama.jabatan.nama} th:value = ${jabatanlama.jabatan.id}></option>
 									    	<a th:each= "jabs, iterationStatus : ${allJabatan}">
 										    	<option th:text = ${jabs.nama} th:value = ${jabs.id}></option>
@@ -118,14 +121,30 @@
 					console.log(objs[0].nama);
 					console.log ("disini");
 					$(".instansi").remove();
-					for (x in objs){
-						console.log(objs[x].nama);
-						$("#form-inst").append("<option class ='instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" value = "+ "'"+objs[x].id+"'"+">" + objs[x].nama +"</option>");
-						console.log("<option class ='instansi' name = 'instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" th:value = "+ "'"+objs[x].id+"'"+">"+objs[x].nama+"</option>");
-					}
+					$("#instansiAwal").remove();
+					
+					var selectHtml = '<select class="form-control" name="instansi" id = "instansiAwal" required>\n';
+
+		            var optionsHtml = '';
+
+		            $.each(objs, function(i, objs ) {
+		            	optionsHtml += '<option value=' + objs.id + '>' + objs.nama + ' - ' + objs.provinsi.nama +'</option>';
+		                });
+
+		            var closingSelectHtml = '</select>';
+		            $( "#dropdownInstansi" ).append(selectHtml + optionsHtml + closingSelectHtml);
+					
+					
+					
+					//for (x in objs){
+					//	console.log(objs[x].nama);
+						//$("#form-inst").append("<option class ='instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" value = "+ "'"+objs[x].id+"'"+">" + objs[x].nama +"</option>");
+						//console.log("<option class ='instansi' name = 'instansi' th:text ="+ "'"+ objs[x].nama+ "'" +" th:value = "+ "'"+objs[x].id+"'"+">"+objs[x].nama+"</option>");
+					//}
 				}
 		})
 	});
+	
 	
 	$("#buttonJabatan").click(function(){
 		console.log("masuk");
@@ -140,15 +159,12 @@
 			url : "/pegawai/cekJabatan",
 			dataType : "json",
 				success: function(json){
-					
-					console.log ("disini");
-					var jabatanCount = /*[[${size}]]*/ 'default';
 					console.log(jabatanCount);
 					var jab = JSON.stringify(json); 
 					var jabatan = JSON.parse(jab);
 					console.log(jabatan);
-					
-	                var selectHtml = '<select class="form-control" id="jabatanPegawai" name="jabatanPegawai['+ jabatanCount +'].jabatan">\n';
+					var jabatanCount = /*[[${size}]]*/ 'default';
+	                var selectHtml = '<select class="form-control" id="jabatanPegawai" name="jabatanPegawai['+ jabatanCount +'].jabatan" required>\n';
 
 	                var optionsHtml = '<option value=null>- Pilih Jabatan -</option>';
 

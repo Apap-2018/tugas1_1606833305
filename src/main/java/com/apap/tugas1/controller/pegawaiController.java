@@ -1,7 +1,5 @@
 package com.apap.tugas1.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,48 +56,45 @@ public class pegawaiController {
 	@RequestMapping ("/pegawai{nip}")
 	public String tampilkan (String nip, Model model) {	
 		PegawaiModel pegawai = pegawaiService.cariPegawaiByNip(nip);
-		List <String> namaJabatanPegawai = new ArrayList<String>();
-		double gajiTertinggi = 0;
+		int gajiPegawaiFix = pegawaiService.gajiTertinggiPegawai(pegawai);
+		//double gajiTertinggi = 0;
+		//for (JabatanPegawaiModel jabatan : pegawai.getJabatanPegawai()) {
+			//if (jabatan.getJabatan().getGajiPokok() > gajiTertinggi) {
+				//gajiTertinggi = jabatan.getJabatan().getGajiPokok();
+			//}
+		//}
+		//double gaji = gajiTertinggi + (pegawai.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggi/100);
+		//int gajiInt = (int) gaji;
 		
-		for (JabatanPegawaiModel jabatan : pegawai.getJabatanPegawai()) {
-			namaJabatanPegawai.add(jabatan.getJabatan().getNama());
-			if (jabatan.getJabatan().getGajiPokok() > gajiTertinggi) {
-				gajiTertinggi = jabatan.getJabatan().getGajiPokok();
-			}
-		}
-		double gaji = gajiTertinggi + (pegawai.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggi/100);
-		String kotaInstansi = pegawai.getInstansi().getProvinsi().getNama();
-		int gajiInt = (int) gaji;
-		model.addAttribute("listJabatan", namaJabatanPegawai);
 		model.addAttribute("pegawai", pegawai);
-		model.addAttribute("gaji", gajiInt);
-		model.addAttribute("kota", kotaInstansi);
+		model.addAttribute("gaji", gajiPegawaiFix);
 		return "pegawaiView";
 	}
+	
 	
 	@RequestMapping (value = "/pegawai/tambah")
 	public String tambahPegawai (Model model) {
 		List <ProvinsiModel> allProvinsi = provinsiService.selectAll();
-		ProvinsiModel provPertama = allProvinsi.get(0);
-		List <InstansiModel> allInstansiAwal = provPertama.getListInstansi();
 		List <JabatanModel> allJabatan = jabatanService.selectAll();
 		model.addAttribute("pegawai", new PegawaiModel());
 		model.addAttribute("allProvinsi", allProvinsi);
-		model.addAttribute("allInstansi",allInstansiAwal);
 		model.addAttribute("allJabatan", allJabatan);
 		return "formPegawai";
 	}
 	
 	
 	@RequestMapping (value = "/pegawai/cekInstansi", method = RequestMethod.GET)
-	public @ResponseBody Object coba (@RequestParam ("id") String id, Model model) {
+	public @ResponseBody Object coba (@RequestParam ("id") String idProvinsi, Model model) {
 		List <InstansiModel> instansi = new ArrayList <InstansiModel>();
-		if (id == null) {
+		System.out.println(idProvinsi);
+		if (idProvinsi.equalsIgnoreCase("0")) {
+			//System.out.println("masuk 0");
 			instansi = instansiService.selectAll();	
 		}
-		ProvinsiModel provinsi = provinsiService.findProvinsiById(Long.parseLong(id));
-		instansi = provinsi.getListInstansi();
-		model.addAttribute("allInstansi", instansi);
+		else {
+			ProvinsiModel provinsi = provinsiService.findProvinsiById(Long.parseLong(idProvinsi));
+			instansi = provinsi.getListInstansi();
+		}
 		Object inst = instansi;
 		return inst;
 	}
@@ -110,45 +105,13 @@ public class pegawaiController {
 		return jabatan;
 	}
 	
+	
 	@RequestMapping (value = "/pegawai/tambah", method = RequestMethod.POST)
-	public String tambahPegawai (Model model, @ModelAttribute PegawaiModel pegawai) throws ParseException {
-		for (JabatanPegawaiModel jab : pegawai.getJabatanPegawai()) {
-			jab.setPegawai(pegawai);
-		}
-		
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		String tanggal = formatter.format(pegawai.getTanggallahir());
-		java.util.Date formattedTglLahir =  formatter.parse(tanggal);
-		SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
-		String tanggalLahirFormat = format.format(formattedTglLahir);
-		String tglLahir = tanggalLahirFormat.substring(0, 4) + ""+ tanggalLahirFormat.substring(6);
-		
-		
-		String tanggalBaru ="" + pegawai.getTanggallahir() + "";
-		InstansiModel instansi = instansiService.cariInstansiById(pegawai.getInstansi().getId());		
-		List <PegawaiModel> allPegawai = instansi.getPegawai_instansi();
-		int indexPegawai = 1;
-		for (PegawaiModel peg : allPegawai) {
-			String tgl = "" + peg.getTanggallahir() + "";
-			if (peg.getTahun_masuk().equalsIgnoreCase(pegawai.getTahun_masuk()) && tgl.equalsIgnoreCase(tanggalBaru)) {
-				indexPegawai++;
-			}
-		}
-		
-		String no_urut = "";
-		if (indexPegawai < 10) {
-			no_urut = "0" + indexPegawai;
-		}
-		else {
-			no_urut = "" + indexPegawai;
-		}
-		
-		String kodeInstansi = ""+pegawai.getInstansi().getId()+"";
-		
-		String nip = kodeInstansi + tglLahir + pegawai.getTahun_masuk() + no_urut;
-		pegawai.setNip(nip);
+	public String tambahPegawai (Model model, @ModelAttribute PegawaiModel pegawai) {
+		jabatanPegawaiService.setPegawaiJab(pegawai);
+		pegawaiService.setNIP(pegawai);
 		pegawaiService.addPegawai(pegawai);
-		model.addAttribute("nips", nip);
+		model.addAttribute("nips", pegawai.getNip());
 		return "berhasilTambahPegawai";
 	}
 	
@@ -164,34 +127,37 @@ public class pegawaiController {
 		PegawaiModel pegMuda = pegUrut.get(pegUrut.size()-1);
 		
 		//Hitung Tua
-		List <String> namaJabatanPegawaiTua = new ArrayList<String>();
-		double gajiTertinggiTua = 0;
-		for (JabatanPegawaiModel jabatan : pegTua.getJabatanPegawai()) {
-			namaJabatanPegawaiTua.add(jabatan.getJabatan().getNama());
-			if (jabatan.getJabatan().getGajiPokok() > gajiTertinggiTua) {
-				gajiTertinggiTua = jabatan.getJabatan().getGajiPokok();
-			}
-		}
-		double gajiTua = gajiTertinggiTua + (pegTua.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggiTua/100);		
+		//List <String> namaJabatanPegawaiTua = new ArrayList<String>();
+		int gajiTertinggiPegTua = pegawaiService.gajiTertinggiPegawai(pegTua);
+		int gajiTertinggiPegMuda = pegawaiService.gajiTertinggiPegawai(pegMuda);
+		
+		//double gajiTertinggiTua = 0;
+		//for (JabatanPegawaiModel jabatan : pegTua.getJabatanPegawai()) {
+			//namaJabatanPegawaiTua.add(jabatan.getJabatan().getNama());
+			//if (jabatan.getJabatan().getGajiPokok() > gajiTertinggiTua) {
+				//gajiTertinggiTua = jabatan.getJabatan().getGajiPokok();
+			//}
+		//}
+		//double gajiTua = gajiTertinggiTua + (pegTua.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggiTua/100);		
 		
 		//Hitung Muda
-		List <String> namaJabatanMuda = new ArrayList<String>();
-		double gajiTertinggiMuda = 0;
+		//List <String> namaJabatanMuda = new ArrayList<String>();
+		//double gajiTertinggiMuda = 0;
 		
-		for (JabatanPegawaiModel jabatan : pegMuda.getJabatanPegawai()) {
-			namaJabatanMuda.add(jabatan.getJabatan().getNama());
-			if (jabatan.getJabatan().getGajiPokok() > gajiTertinggiMuda) {
-				gajiTertinggiMuda = jabatan.getJabatan().getGajiPokok();
-			}
-		}
-		double gajiMuda = gajiTertinggiMuda + (pegMuda.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggiMuda/100);
+	//	for (JabatanPegawaiModel jabatan : pegMuda.getJabatanPegawai()) {
+		//	namaJabatanMuda.add(jabatan.getJabatan().getNama());
+			//if (jabatan.getJabatan().getGajiPokok() > gajiTertinggiMuda) {
+				//gajiTertinggiMuda = jabatan.getJabatan().getGajiPokok();
+			//}
+		//}
+		//double gajiMuda = gajiTertinggiMuda + (pegMuda.getInstansi().getProvinsi().getPresentase_tunjangan() * gajiTertinggiMuda/100);
 		
 		model.addAttribute("pegTua", pegTua);
 		model.addAttribute("pegMuda", pegMuda);
-		model.addAttribute("listJabatanTua", namaJabatanPegawaiTua);
-		model.addAttribute("gajiTua", gajiTua);
-		model.addAttribute("gajiMuda", gajiMuda);
-		model.addAttribute("listJabatanMuda", namaJabatanMuda);
+		//model.addAttribute("listJabatanTua", namaJabatanPegawaiTua);
+		model.addAttribute("gajiTua", gajiTertinggiPegTua);
+		model.addAttribute("gajiMuda", gajiTertinggiPegMuda);
+		//model.addAttribute("listJabatanMuda", namaJabatanMuda);
 		model.addAttribute("instansi", instansi);
 		model.addAttribute("kotaInstansi", instansi.getProvinsi().getNama());
 		return "lihatPegawaiTertua-Termuda";
@@ -313,26 +279,30 @@ public class pegawaiController {
 	public String ubahPegawai (@RequestParam (value = "nip") String nip, Model model) {
 		PegawaiModel pegawai = pegawaiService.cariPegawaiByNip(nip);
 		List <ProvinsiModel> allProvinsi = provinsiService.selectAll();
-		ProvinsiModel provPertama = pegawai.getInstansi().getProvinsi();
-		List <InstansiModel> allInstansiAwal = provPertama.getListInstansi();
 		List <JabatanModel> allJabatan = jabatanService.selectAll();
 		
 		model.addAttribute("pegawai", pegawai);
 		model.addAttribute("size", pegawai.getJabatanPegawai().size());
 		model.addAttribute("allProvinsi", allProvinsi);
-		model.addAttribute("allInstansi", allInstansiAwal);
 		model.addAttribute("allJabatan", allJabatan);
 		return "editPegawai";
 	}
 	
+	
 	@RequestMapping (value = "pegawai/ubah", method = RequestMethod.POST)
-	public String simpanUbahPegawai (@ModelAttribute PegawaiModel pegawai, Model model) throws ParseException {
+	public String simpanUbahPegawai (@ModelAttribute PegawaiModel pegawai, Model model) {
+		jabatanPegawaiService.setPegawaiJab(pegawai);
 		PegawaiModel pegawaiLama = pegawaiService.cariPegawaiById(pegawai.getId());
 		pegawaiService.hapusJabatanPegawaiPegawai(pegawaiLama);
+		pegawaiService.resetNIP(pegawai);
+		pegawaiService.updatePegawai(pegawai, pegawai.getId());
+		model.addAttribute("nips", pegawai.getNip());
+		return "berhasilUbahPegawai";
 		
-		for (JabatanPegawaiModel pegjab : pegawai.getJabatanPegawai()) {
-			pegjab.setPegawai(pegawai);
-		}
+		
+		
+		/**
+		 * 
 		
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		String tanggal = formatter.format(pegawai.getTanggallahir());
@@ -365,10 +335,9 @@ public class pegawaiController {
 		String kodeInstansi = ""+pegawai.getInstansi().getId()+"";
 		
 		String nip = kodeInstansi + tglLahir + pegawai.getTahun_masuk() + no_urut;
+		*/
+		//pegawai.setNip(nip);
+		//pegawaiService.updatePegawai(pegawai, pegawai.getId());
 		
-		pegawai.setNip(nip);
-		pegawaiService.updatePegawai(pegawai, pegawai.getId());
-		model.addAttribute("nips", nip);
-		return "berhasilUbahPegawai";
 	}
 }

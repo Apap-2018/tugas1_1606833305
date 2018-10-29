@@ -13,4 +13,7 @@ public interface PegawaiService {
 	PegawaiModel cariPegawaiById (long id);	
 	void updatePegawai (PegawaiModel pegawaiBaru, long id);
 	void hapusJabatanPegawaiPegawai (PegawaiModel pegawai);
+	void setNIP (PegawaiModel pegawai);
+	void resetNIP (PegawaiModel pegawai);
+	int gajiTertinggiPegawai (PegawaiModel pegawai);
 }

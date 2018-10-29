@@ -68,7 +68,7 @@
 					      	
 					      	<tr>
 					        	<td>Nama Instansi</td>
-					        	<td th:text = "${pegawai.instansi.nama} + ' - ' + ${kota}"></td>
+					        	<td th:text = "${pegawai.instansi.nama} + ' - ' + ${pegawai.instansi.provinsi.nama}"></td>
 					        	<td>
 					        	<td>
 					      	</tr>
@@ -76,8 +76,8 @@
 					      	<tr>
 					      		<td>Jabatan</td>
 					      		<td>
-					      			<div th:each="namaJabatan, iterationStatus : ${listJabatan}">
-					      				<div th:text="${iterationStatus.count} + '. ' + ${namaJabatan}" ></div>
+					      			<div th:each="jabatan, iterationStatus : ${pegawai.jabatanPegawai}">
+					      				<div th:text="${iterationStatus.count} + '. ' + ${jabatan.jabatan.nama}" ></div>
 									</div>
 								</td>
 							</tr>
